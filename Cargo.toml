@@ -1,0 +1,101 @@
+[package]
+name = "jsonschema-cli"
+description = "JSON Schema validation tool"
+version = "0.1.0"
+authors = ["K. <kayo@illumium.org>"]
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[[bin]]
+name = "jsonschema"
+path = "src/main.rs"
+
+[dependencies]
+dirs = "3"
+paw = "1"
+log = "0.4"
+pretty_env_logger = "0.4"
+jsonschema = "0.3"
+
+[dependencies.serde]
+version = "1"
+features = ["derive"]
+optional = true
+
+[dependencies.serde_with]
+version = "1"
+optional = true
+
+[dependencies.hex]
+version = "0.4"
+optional = true
+
+[dependencies.crypto-hashes]
+version = "0.9"
+optional = true
+
+[dependencies.regex]
+version = "1"
+optional = true
+
+[dependencies.json]
+package = "serde_json"
+version = "1"
+
+[dependencies.json5]
+version = "0.2"
+optional = true
+
+[dependencies.yaml]
+package = "serde_yaml"
+version = "0.8"
+optional = true
+
+[dependencies.toml]
+version = "0.5"
+optional = true
+
+[dependencies.ron]
+version = "0.6"
+optional = true
+
+[dependencies.bson]
+version = "1"
+optional = true
+
+[dependencies.cbor]
+package = "serde_cbor"
+version = "0.11"
+optional = true
+
+[dependencies.pickle]
+package = "serde-pickle"
+version = "0.6"
+optional = true
+
+[dependencies.structopt]
+version = "0.3"
+features = ["paw"]
+
+[dependencies.sled]
+version = "0.34"
+optional = true
+
+[dependencies.http_req]
+version = "0.7"
+optional = true
+
+[features]
+default = ["full"] # sled
+
+full = ["schemastore", "cache", "sled", "all-formats"]
+minimal = []
+
+schemastore = ["http_req", "serde_with", "regex"]
+cache = ["serde", "hex", "crypto-hashes"]
+
+txt-formats = ["yaml", "toml", "ron"]
+bin-formats = []
+#bin-formats = ["bson", "cbor", "pickle"]
+all-formats = ["txt-formats", "bin-formats"]
