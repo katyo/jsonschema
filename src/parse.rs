@@ -1,4 +1,3 @@
-use crate::{Error, Result};
 use std::{path::Path, str::FromStr};
 
 macro_rules! decl_formats {
@@ -24,14 +23,24 @@ macro_rules! decl_formats {
             type Err = &'static str;
 
             fn from_str(s: &str) -> std::result::Result<Self, Self::Err> {
-                use Format::*;
                 Ok(match s {
                     $(
                         $(#[$attr])*
-                        stringify!($name) => $type,
+                        stringify!($name) => Self::$type,
                     )*
                     _ => return Err("unknown"),
                 })
+            }
+        }
+
+        impl std::fmt::Display for Format {
+            fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+                match self {
+                    $(
+                        $(#[$attr])*
+                        Self::$type => stringify!($name).fmt(f),
+                    )*
+                }
             }
         }
 
@@ -46,12 +55,11 @@ macro_rules! decl_formats {
 
             /// Determining data format from file name
             pub fn from_path(path: &Path) -> Option<Self> {
-                use Format::*;
                 let ext = path.extension()?;
                 $(
                     $(#[$attr])*
                     if $(ext == $ext ||)* false {
-                        return Some($type);
+                        return Some(Self::$type);
                     }
                 )*
                 None
@@ -59,13 +67,11 @@ macro_rules! decl_formats {
 
             /// Unified data parsing
             pub fn parse_data(&self, topic: &str, path: &Path, data: &[u8]) -> Option<json::Value> {
-                use Format::*;
-
                 match self {
                     $(
                         $(#[$attr])*
-                        $type => {
-                            let data = $name::from_slice::<$name::Value>(data)
+                        Self::$type => {
+                            $name::from_slice(data)
                                 .map_err(|error| {
                                     log::error!(
                                         "Unable to parse {} {} from '{}' due to: {}",
@@ -75,8 +81,7 @@ macro_rules! decl_formats {
                                         error
                                     );
                                 })
-                                .ok()?;
-                            $name::to_json(data)
+                                .ok()
                         }
                     )*
                 }
@@ -101,18 +106,6 @@ decl_formats! {
     Cbor cbor ["cbor"];
     #[cfg(feature = "pickle")]
     Pickle pickle ["pickle"];
-}
-
-pub fn parse_json(topic: &str, path: &Path, data: &Vec<u8>) -> Result<::json::Value> {
-    ::json::from_slice(data).map_err(|error| {
-        log::warn!(
-            "Unable to parse {} from '{}' due to: {}",
-            topic,
-            path.display(),
-            error
-        );
-        Error::Parse
-    })
 }
 
 #[cfg(test)]
@@ -144,5 +137,77 @@ mod test {
         #[cfg(not(feature = "toml"))]
         assert_eq!(Format::from_path(Path::new("path/to/data.toml")), None);
         assert_eq!(Format::from_path(Path::new("path/to/dir")), None);
+    }
+
+    #[cfg(feature = "json5")]
+    #[test]
+    fn parse_json5() {
+        let data: json::Value = json5::from_slice(b"{a:1, b:false, c:[1,true,'a',], }").unwrap();
+        println!("json5: {:?}", data);
+        assert_eq!(
+            data,
+            ::json::json!(
+                {
+                    "a": 1,
+                    "b": false,
+                    "c": [1, true, "a"]
+                }
+            )
+        );
+    }
+
+    #[cfg(feature = "yaml")]
+    #[test]
+    fn parse_yaml() {
+        let data: json::Value =
+            yaml::from_slice(b"a: 1\nb: false\nc:\n- 1\n- true\n- a\n").unwrap();
+        println!("yaml: {:?}", data);
+        assert_eq!(
+            data,
+            ::json::json!(
+                {
+                    "a": 1,
+                    "b": false,
+                    "c": [1, true, "a"]
+                }
+            )
+        );
+    }
+
+    #[cfg(feature = "toml")]
+    #[test]
+    fn parse_toml() {
+        let data: json::Value = toml::from_slice(b"a = 1\nb = false\nc = [1, true, 'a',]").unwrap();
+        println!("toml: {:?}", data);
+        assert_eq!(
+            data,
+            ::json::json!(
+                {
+                    "a": 1,
+                    "b": false,
+                    "c": [1, true, "a"]
+                }
+            )
+        );
+    }
+
+    #[cfg(feature = "toml")]
+    #[test]
+    fn parse_toml_nested() {
+        let data: json::Value =
+            toml::from_slice(b"[topic]\na = 1\nb = false\nc = [1, true, 'a',]").unwrap();
+        println!("toml: {:?}", data);
+        assert_eq!(
+            data,
+            ::json::json!(
+                {
+                    "topic": {
+                        "a": 1,
+                        "b": false,
+                        "c": [1, true, "a"]
+                    }
+                }
+            )
+        );
     }
 }

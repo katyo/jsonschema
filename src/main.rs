@@ -98,7 +98,17 @@ impl CheckArgs {
             let path = &self.schema;
             let mut file = utils::open_file(topic, path)?;
             let data = utils::read_input(topic, path, &mut file)?;
-            parse::parse_json(topic, path, &data)?
+            Format::from_path(&self.schema)
+                .ok_or_else(|| {
+                    log::error!(
+                        "Unable to determine {} format of '{}'",
+                        topic,
+                        path.display()
+                    );
+                    Error::Parse
+                })?
+                .parse_data(topic, path, &data)
+                .ok_or(Error::Parse)?
         } else {
             let pattern = self.schema.display().to_string();
             state
@@ -123,17 +133,18 @@ impl CheckArgs {
                     return Err(Error::Open);
                 }
                 let mut file = utils::open_file(topic, path)?;
-                errors += Self::read_parse_check(args, topic, &schema, path, &mut file)?;
+                errors += self.read_parse_check(args, topic, &schema, path, &mut file)?;
             }
             Ok(errors)
         } else {
             let path = Path::new("stdin");
             let mut file = std::io::stdin();
-            Self::read_parse_check(args, topic, &schema, &path, &mut file)
+            self.read_parse_check(args, topic, &schema, &path, &mut file)
         }
     }
 
     fn read_parse_check(
+        &self,
         args: &Args,
         topic: &str,
         schema: &jsonschema::JSONSchema,
@@ -141,7 +152,19 @@ impl CheckArgs {
         input: &mut dyn std::io::Read,
     ) -> CmdResult {
         let data = utils::read_input(topic, path, input)?;
-        let data = parse::parse_json(topic, path, &data)?;
+        let format = Format::from_path(&path);
+        let format = if let Some(format) = format {
+            format
+        } else {
+            log::error!(
+                "Unable to determine {} format of '{}'. Try using {} by default.",
+                topic,
+                path.display(),
+                self.format
+            );
+            self.format
+        };
+        let data = format.parse_data(topic, path, &data).ok_or(Error::Parse)?;
         Ok(Self::check(args, schema, path, &data))
     }
 
@@ -152,7 +175,7 @@ impl CheckArgs {
                 let mut n = 0;
                 for error in errors {
                     n += 1;
-                    eprintln!("{}{}", path.display(), error)
+                    eprintln!("{} {}", path.display(), error)
                 }
                 n
             } else {
