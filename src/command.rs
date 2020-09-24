@@ -67,7 +67,7 @@ pub struct Args {
     pub verbose: bool,
 
     /// Force overwrite
-    #[structopt(short, long)]
+    #[structopt(short = "F", long)]
     pub force: bool,
 
     #[cfg(feature = "cache")]
@@ -77,13 +77,13 @@ pub struct Args {
 
     #[cfg(feature = "cache")]
     /// Disable caching
-    #[structopt(short = "n", long, env)]
+    #[structopt(short = "x", long, env)]
     pub no_cache: bool,
 
     #[cfg(feature = "schemastore")]
     /// Schema store catalog url
     #[structopt(
-        short = "u",
+        short = "U",
         long,
         env,
         default_value = "https://www.schemastore.org/api/json/catalog.json"
