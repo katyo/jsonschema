@@ -27,8 +27,8 @@ optional = true
 version = "1"
 optional = true
 
-[dependencies.hex]
-version = "0.4"
+[dependencies.base64]
+version = "0.12"
 optional = true
 
 [dependencies.crypto-hashes]
@@ -93,7 +93,7 @@ full = ["schemastore", "cache", "sled", "all-formats"]
 minimal = []
 
 schemastore = ["http_req", "serde_with", "regex"]
-cache = ["serde", "hex", "crypto-hashes"]
+cache = ["serde", "base64", "crypto-hashes"]
 
 txt-formats = ["json5", "yaml", "toml", "ron"]
 bin-formats = ["bson", "cbor", "pickle"]
