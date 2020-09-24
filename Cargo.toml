@@ -129,7 +129,7 @@ rustls = ["http_req/rustls"]
 
 [profile.release]
 opt-level = "s"
-lto = "thin"
-#lto = "fat"
+#lto = "thin"
+lto = "fat"
 panic = "abort"
 codegen-units = 1
