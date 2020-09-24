@@ -11,8 +11,8 @@ license = "Apache-2.0"
 keywords = ["jsonschema", "json", "inferring", "validation", "commandline"]
 categories = ["command-line-utilities"]
 
-[badges]
-maintenance = { status = "experimental" }
+[badges.maintenance]
+status = "experimental"
 
 [[bin]]
 name = "jsonschema"
@@ -115,22 +115,56 @@ version = "0.7"
 optional = true
 
 [features]
-default = ["full"] # sled
+default = ["full"]
 
-full = ["schemastore", "cache", "infers", "all-validators", "all-parsers"]
-minimal = ["jsonschema"]
-
-schemastore = ["http_req", "serde_with", "regex"]
-cache = ["serde", "base64",
-  #"crypto-hashes"
-  "hmac-sha256"
+full = [
+  "schemastore",
+  "cache",
+  "infers",
+  "all-validators",
+  "all-parsers",
 ]
 
-all-validators = ["jsonschema", "jsonschema-valid", "valico"]
+minimal = [
+  "valico",
+]
 
-txt-parsers = ["json5", "yaml", "toml", "ron"]
-bin-parsers = ["bson", "cbor", "pickle"]
-all-parsers = ["txt-parsers", "bin-parsers"]
+schemastore = [
+  "http_req",
+  "serde_with",
+  "regex",
+]
+
+cache = [
+  "serde",
+  "base64",
+  #"crypto-hashes",
+  "hmac-sha256",
+]
+
+all-validators = [
+  "jsonschema",
+  "jsonschema-valid",
+  "valico",
+]
+
+txt-parsers = [
+  "json5",
+  "yaml",
+  "toml",
+  "ron",
+]
+
+bin-parsers = [
+  "bson",
+  "cbor",
+  "pickle",
+]
+
+all-parsers = [
+  "txt-parsers",
+  "bin-parsers",
+]
 
 rustls = ["http_req/rustls"]
 
