@@ -1,10 +1,11 @@
-use std::{path::Path, str::FromStr};
+use std::path::Path;
 
 macro_rules! decl_formats {
     ($(
         $(#[$attr:meta])*
         $type:ident $name:ident [ $($ext:literal),* ];
     )*) => {
+        /// Define modules
         $(
             $(#[$attr])*
             mod $name;
@@ -19,7 +20,7 @@ macro_rules! decl_formats {
             )*
         }
 
-        impl FromStr for Format {
+        impl std::str::FromStr for Format {
             type Err = &'static str;
 
             fn from_str(s: &str) -> std::result::Result<Self, Self::Err> {

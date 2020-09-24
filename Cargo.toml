@@ -1,6 +1,6 @@
 [package]
 name = "jsonschema-cli"
-description = "JSON Schema validation tool"
+description = "JSON Schema hacking toolset"
 version = "0.1.0"
 authors = ["K. <kayo@illumium.org>"]
 edition = "2018"
@@ -16,7 +16,19 @@ dirs = "3"
 paw = "1"
 log = "0.4"
 pretty_env_logger = "0.4"
-jsonschema = "0.3"
+url = "2"
+
+[dependencies.jsonschema]
+version = "0.3"
+optional = true
+
+[dependencies.jsonschema-valid]
+version = "0.4"
+optional = true
+
+[dependencies.valico]
+version = "3"
+optional = true
 
 [dependencies.serde]
 version = "1"
@@ -94,14 +106,14 @@ optional = true
 [features]
 default = ["full"] # sled
 
-full = ["schemastore", "cache", "infers", "all-checkers", "all-formats"]
-minimal = []
+full = ["schemastore", "cache", "infers", "all-validators", "all-parsers"]
+minimal = ["jsonschema"]
 
 schemastore = ["http_req", "serde_with", "regex"]
 cache = ["serde", "base64", "crypto-hashes"]
 
-all-checkers = []
+all-validators = ["jsonschema", "jsonschema-valid", "valico"]
 
-txt-formats = ["json5", "yaml", "toml", "ron"]
-bin-formats = ["bson", "cbor", "pickle"]
-all-formats = ["txt-formats", "bin-formats"]
+txt-parsers = ["json5", "yaml", "toml", "ron"]
+bin-parsers = ["bson", "cbor", "pickle"]
+all-parsers = ["txt-parsers", "bin-parsers"]

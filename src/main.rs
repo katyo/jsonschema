@@ -4,6 +4,13 @@ mod error;
 mod parse;
 pub mod utils;
 
+#[cfg(any(
+    feature = "jsonschema",
+    feature = "jsonschema-valid",
+    feature = "valico"
+))]
+mod validate;
+
 #[cfg(feature = "schemastore")]
 mod schemastore;
 
@@ -20,6 +27,13 @@ pub use cache::Cache;
 pub use command::Args;
 pub use error::Error;
 pub use parse::Format;
+
+#[cfg(any(
+    feature = "jsonschema",
+    feature = "jsonschema-valid",
+    feature = "valico"
+))]
+pub use validate::{CompiledSchema, Standard, Validator};
 
 pub type Result<T> = std::result::Result<T, Error>;
 

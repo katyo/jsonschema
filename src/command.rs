@@ -7,12 +7,24 @@ mod retrieve;
 #[cfg(feature = "infers")]
 mod infer;
 
+#[cfg(any(
+    feature = "jsonschema",
+    feature = "jsonschema-valid",
+    feature = "valico"
+))]
 mod check;
 
 pub use std::path::{Path, PathBuf};
 pub use structopt::StructOpt;
 
 pub use crate::{utils, Error, Format, Result, State};
+
+#[cfg(any(
+    feature = "jsonschema",
+    feature = "jsonschema-valid",
+    feature = "valico"
+))]
+pub use crate::{CompiledSchema, Standard, Validator};
 
 pub type CmdResult = Result<u32>;
 
@@ -35,7 +47,12 @@ pub enum Command {
     /// Infer schema from data
     Infer(infer::Command),
 
-    /// Validate data using json schama
+    #[cfg(any(
+        feature = "jsonschema",
+        feature = "jsonschema-valid",
+        feature = "valico"
+    ))]
+    /// Validate data using json schema
     Check(check::Command),
 }
 
@@ -88,6 +105,11 @@ impl Args {
             Retrieve(cmd_args) => cmd_args.run(self, state),
             #[cfg(feature = "infers")]
             Infer(cmd_args) => cmd_args.run(self, state),
+            #[cfg(any(
+                feature = "jsonschema",
+                feature = "jsonschema-valid",
+                feature = "valico"
+            ))]
             Check(cmd_args) => cmd_args.run(self, state),
         }
     }

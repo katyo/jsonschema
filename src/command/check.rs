@@ -1,10 +1,21 @@
-use super::{utils, Args, CmdResult, Error, Format, Path, PathBuf, State, StructOpt};
+use super::{
+    utils, Args, CmdResult, CompiledSchema, Error, Format, Path, PathBuf, Standard, State,
+    StructOpt, Validator,
+};
 
 #[derive(StructOpt, Debug)]
 pub struct Command {
     /// Input data format
     #[structopt(short, long, possible_values = Format::LIST)]
     pub format: Option<Format>,
+
+    /// Using standard
+    #[structopt(short, long, possible_values = Standard::LIST)]
+    pub standard: Option<Standard>,
+
+    /// Using validator
+    #[structopt(short, long, default_value = Validator::LIST[0], possible_values = Validator::LIST)]
+    pub validator: Validator,
 
     #[cfg(feature = "schemastore")]
     /// Schema file or name
@@ -49,10 +60,7 @@ impl Command {
                 .1
         };
 
-        let schema = jsonschema::JSONSchema::compile(&schema, None).map_err(|error| {
-            log::error!("Unable to compile JSON Schema due to: {}", error);
-            Error::Compile
-        })?;
+        let schema = self.validator.compile_schema(&schema, self.standard)?;
 
         let topic = "data";
 
@@ -78,7 +86,7 @@ impl Command {
         &self,
         args: &Args,
         topic: &str,
-        schema: &jsonschema::JSONSchema,
+        schema: &CompiledSchema,
         path: &Path,
         input: &mut dyn std::io::Read,
     ) -> CmdResult {
@@ -95,29 +103,6 @@ impl Command {
                 Error::Parse
             })?;
         let data = format.parse_data(topic, path, &data).ok_or(Error::Parse)?;
-        Ok(Self::check(args, schema, path, &data))
-    }
-
-    fn check(args: &Args, schema: &jsonschema::JSONSchema, path: &Path, data: &json::Value) -> u32 {
-        if args.verbose {
-            if let Err(errors) = schema.validate(data) {
-                println!("Data is not valid");
-                let mut n = 0;
-                for error in errors {
-                    n += 1;
-                    eprintln!("{} {}", path.display(), error)
-                }
-                n
-            } else {
-                println!("Data is valid");
-                0
-            }
-        } else {
-            if schema.is_valid(data) {
-                0
-            } else {
-                1
-            }
-        }
+        schema.validate_data(path, &data, args.verbose)
     }
 }
