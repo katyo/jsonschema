@@ -63,3 +63,15 @@ pub fn write_output(
         Ok(())
     }
 }
+
+pub fn format_json(topic: &str, data: &json::Value, pretty: bool) -> Result<Vec<u8>> {
+    if pretty {
+        json::to_vec_pretty(data)
+    } else {
+        json::to_vec(data)
+    }
+    .map_err(|error| {
+        log::error!("Unable to format {} due to: {}", topic, error);
+        Error::Format
+    })
+}
