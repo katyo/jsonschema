@@ -117,3 +117,10 @@ all-validators = ["jsonschema", "jsonschema-valid", "valico"]
 txt-parsers = ["json5", "yaml", "toml", "ron"]
 bin-parsers = ["bson", "cbor", "pickle"]
 all-parsers = ["txt-parsers", "bin-parsers"]
+
+[profile.release]
+opt-level = "s"
+lto = "thin"
+#lto = "fat"
+panic = "abort"
+codegen-units = 1
