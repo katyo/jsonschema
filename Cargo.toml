@@ -4,8 +4,15 @@ description = "JSON Schema hacking toolset"
 version = "0.1.0"
 authors = ["K. <kayo@illumium.org>"]
 edition = "2018"
+readme = "README.md"
+homepage = "https://github.com/katyo/jsonschema"
+repository = "https://github.com/katyo/jsonschema"
+license = "Apache-2.0"
+keywords = ["jsonschema", "json", "inferring", "validation", "commandline"]
+categories = ["command-line-utilities"]
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+[badges]
+maintenance = { status = "experimental" }
 
 [[bin]]
 name = "jsonschema"
