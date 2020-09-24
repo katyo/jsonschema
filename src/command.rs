@@ -33,27 +33,53 @@ pub use crate::Uri;
 
 static LOG_LEVELS: &[&str] = &["error", "warn", "info", "debug", "trace"];
 
-#[derive(StructOpt, Debug)]
-pub enum Command {
-    #[cfg(feature = "schemastore")]
-    /// Search schamas on schema store
-    Search(search::Command),
+macro_rules! decl_commands {
+    ($(
+        $(#[$attr:meta])*
+        $type:ident $name:ident;
+    )*) => {
+        #[derive(StructOpt, Debug)]
+        pub enum Command {
+            $(
+                $(#[$attr])*
+                $type($name::Command),
+            )*
+        }
 
+        impl Command {
+            pub fn run(&self, args: &Args, state: &State) -> CmdResult {
+                #[allow(unused_doc_comments)]
+                match self {
+                    $(
+                        $(#[$attr])*
+                        Self::$type(cmd_args) => cmd_args.run(args, state),
+                    )*
+                }
+            }
+        }
+    };
+}
+
+decl_commands! {
+    /// Search schemas on schema store
     #[cfg(feature = "schemastore")]
+    Search search;
+
     /// Retrieve schema contents
-    Retrieve(retrieve::Command),
+    #[cfg(feature = "schemastore")]
+    Retrieve retrieve;
 
-    #[cfg(feature = "infers")]
     /// Infer schema from data
-    Infer(infer::Command),
+    #[cfg(feature = "infers")]
+    Infer infer;
 
+    /// Validate data using json schema
     #[cfg(any(
         feature = "jsonschema",
         feature = "jsonschema-valid",
         feature = "valico"
     ))]
-    /// Validate data using json schema
-    Validate(validate::Command),
+    Validate validate;
 }
 
 #[derive(StructOpt, Debug)]
@@ -97,21 +123,7 @@ pub struct Args {
 
 impl Args {
     pub fn run(&self, state: &State) -> CmdResult {
-        use Command::*;
-        match &self.command {
-            #[cfg(feature = "schemastore")]
-            Search(cmd_args) => cmd_args.run(self, state),
-            #[cfg(feature = "schemastore")]
-            Retrieve(cmd_args) => cmd_args.run(self, state),
-            #[cfg(feature = "infers")]
-            Infer(cmd_args) => cmd_args.run(self, state),
-            #[cfg(any(
-                feature = "jsonschema",
-                feature = "jsonschema-valid",
-                feature = "valico"
-            ))]
-            Validate(cmd_args) => cmd_args.run(self, state),
-        }
+        self.command.run(self, state)
     }
 
     pub fn check_output_file(&self, path: impl AsRef<Path>) -> Result<()> {
