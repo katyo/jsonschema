@@ -12,7 +12,7 @@ mod infer;
     feature = "jsonschema-valid",
     feature = "valico"
 ))]
-mod check;
+mod validate;
 
 pub use std::path::{Path, PathBuf};
 pub use structopt::StructOpt;
@@ -53,7 +53,7 @@ pub enum Command {
         feature = "valico"
     ))]
     /// Validate data using json schema
-    Check(check::Command),
+    Validate(validate::Command),
 }
 
 #[derive(StructOpt, Debug)]
@@ -110,7 +110,7 @@ impl Args {
                 feature = "jsonschema-valid",
                 feature = "valico"
             ))]
-            Check(cmd_args) => cmd_args.run(self, state),
+            Validate(cmd_args) => cmd_args.run(self, state),
         }
     }
 
