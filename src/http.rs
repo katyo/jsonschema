@@ -25,6 +25,10 @@ impl<T> Doc<T> {
             time,
         }
     }
+
+    pub fn refresh(&mut self) {
+        self.time = SystemTime::now();
+    }
 }
 
 pub fn get_cached<T>(cache: &Cache, url: impl AsRef<str>) -> Option<T>
@@ -41,7 +45,14 @@ where
         }
         match check(url, &cached_doc.etag, &cached_doc.date) {
             // when error happened or not modified
-            None | Some(false) => return Some(cached_doc.body),
+            None | Some(false) => {
+                let mut cached_doc = cached_doc;
+
+                cached_doc.refresh();
+                cache.put(&url, &cached_doc);
+
+                return Some(cached_doc.body);
+            }
             _ => (),
         }
     }
