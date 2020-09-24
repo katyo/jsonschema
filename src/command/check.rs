@@ -2,9 +2,9 @@ use super::{utils, Args, CmdResult, Error, Format, Path, PathBuf, State, StructO
 
 #[derive(StructOpt, Debug)]
 pub struct Command {
-    /// Data format
-    #[structopt(short, long, default_value = "json", possible_values = Format::LIST)]
-    pub format: Format,
+    /// Input data format
+    #[structopt(short, long, possible_values = Format::LIST)]
+    pub format: Option<Format>,
 
     #[cfg(feature = "schemastore")]
     /// Schema file or name
@@ -28,10 +28,11 @@ impl Command {
             let path = &self.schema;
             let mut file = utils::open_file(topic, path)?;
             let data = utils::read_input(topic, path, &mut file)?;
+
             Format::from_path(&self.schema)
                 .ok_or_else(|| {
                     log::error!(
-                        "Unable to determine {} format of '{}'",
+                        "Unable to determine {} format from '{}'",
                         topic,
                         path.display()
                     );
@@ -82,18 +83,17 @@ impl Command {
         input: &mut dyn std::io::Read,
     ) -> CmdResult {
         let data = utils::read_input(topic, path, input)?;
-        let format = Format::from_path(&path);
-        let format = if let Some(format) = format {
-            format
-        } else {
-            log::error!(
-                "Unable to determine {} format of '{}'. Try using {} by default.",
-                topic,
-                path.display(),
-                self.format
-            );
-            self.format
-        };
+        let format = self
+            .format
+            .or_else(|| Format::from_path(&path))
+            .ok_or_else(|| {
+                log::error!(
+                    "Format of {} from '{}' is not given and cannot to be inferred from filename. Try use -f option to set it.",
+                    topic,
+                    path.display()
+                );
+                Error::Parse
+            })?;
         let data = format.parse_data(topic, path, &data).ok_or(Error::Parse)?;
         Ok(Self::check(args, schema, path, &data))
     }
