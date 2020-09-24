@@ -146,10 +146,10 @@ decl_standards! {
 }
 
 decl_validators! {
+    #[cfg(feature = "valico")]
+    Valico valico;
     #[cfg(feature = "jsonschema")]
     JsonSchema jsonschema;
     #[cfg(feature = "jsonschema-valid")]
     JsonSchemaValid jsonschema_valid;
-    #[cfg(feature = "valico")]
-    Valico valico;
 }
