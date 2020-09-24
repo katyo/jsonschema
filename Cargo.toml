@@ -1,5 +1,5 @@
 [package]
-name = "jsonschema-cli"
+name = "jsonst"
 description = "JSON Schema hacking toolset"
 version = "0.1.0"
 authors = ["K. <kayo@illumium.org>"]
@@ -13,10 +13,6 @@ categories = ["command-line-utilities"]
 
 [badges.maintenance]
 status = "experimental"
-
-[[bin]]
-name = "jsonschema"
-path = "src/main.rs"
 
 [dependencies]
 dirs = "3"
