@@ -1,3 +1,9 @@
+/*!
+
+Searching and retrieving JSON Schemas from [schemastore.org](https://schemastore.org/)
+
+*/
+
 mod data;
 
 use crate::{http::get_cached, Args, Cache, Uri};

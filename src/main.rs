@@ -1,6 +1,5 @@
 mod cache;
 mod command;
-mod error;
 mod parse;
 pub mod utils;
 
@@ -25,7 +24,6 @@ pub use schemastore::SchemaStore;
 
 pub use cache::Cache;
 pub use command::Args;
-pub use error::Error;
 pub use parse::Format;
 
 #[cfg(any(
@@ -35,8 +33,25 @@ pub use parse::Format;
 ))]
 pub use validate::{CompiledSchema, Standard, Validator};
 
+/// Exit error codes
+#[derive(Clone, Copy)]
+#[repr(i32)]
+pub enum Error {
+    Read = -1,
+    Write = -2,
+    Open = -3,
+    Create = -4,
+    Conflict = -5,
+    Query = -6,
+    Parse = -7,
+    Compile = -8,
+    Format = -9,
+}
+
+/// Result alias
 pub type Result<T> = std::result::Result<T, Error>;
 
+/// Program state
 pub struct State {
     #[cfg(feature = "schemastore")]
     pub schema_store: SchemaStore,

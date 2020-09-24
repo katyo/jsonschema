@@ -1,3 +1,9 @@
+/*!
+
+[valico](https://docs.rs/valico) JSON Schema validator support
+
+*/
+
 use super::{Error, Path, Result, Standard};
 use valico::json_schema::Scope;
 

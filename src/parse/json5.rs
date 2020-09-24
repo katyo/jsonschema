@@ -1,3 +1,9 @@
+/*!
+
+[JSON5](https://json5.org/) format (text)
+
+*/
+
 pub use json5::from_str;
 
 pub fn from_slice<'a, T>(s: &'a [u8]) -> json5::Result<T>

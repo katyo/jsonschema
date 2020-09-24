@@ -1,3 +1,9 @@
+/*!
+
+Some utility functions
+
+*/
+
 use crate::{Error, Result};
 use std::{
     fs::File,

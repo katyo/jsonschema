@@ -1,3 +1,9 @@
+/*!
+
+Parsing input data with support for multiple text and binary formats
+
+*/
+
 use std::path::Path;
 
 macro_rules! decl_formats {
@@ -5,7 +11,7 @@ macro_rules! decl_formats {
         $(#[$attr:meta])*
         $type:ident $name:ident [ $($ext:literal),* ];
     )*) => {
-        /// Define modules
+        // Define modules
         $(
             $(#[$attr])*
             mod $name;
@@ -93,18 +99,25 @@ macro_rules! decl_formats {
 
 decl_formats! {
     Json json ["json"];
+
     #[cfg(feature = "json5")]
     Json5 json5 ["json5"];
+
     #[cfg(feature = "yaml")]
     Yaml yaml ["yaml", "yml"];
+
     #[cfg(feature = "toml")]
     Toml toml ["toml"];
+
     #[cfg(feature = "ron")]
     Ron ron ["ron"];
+
     #[cfg(feature = "bson")]
     Bson bson ["bson"];
+
     #[cfg(feature = "cbor")]
     Cbor cbor ["cbor"];
+
     #[cfg(feature = "pickle")]
     Pickle pickle ["pickle"];
 }

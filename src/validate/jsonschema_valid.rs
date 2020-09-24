@@ -1,3 +1,9 @@
+/*!
+
+[jsonschema-valid](https://docs.rs/jsonschema-valid) validator support
+
+*/
+
 use super::{Error, Path, Result, Standard};
 use jsonschema_valid::{schemas::Draft, Config};
 

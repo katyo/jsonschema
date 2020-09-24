@@ -1,3 +1,9 @@
+/*!
+
+File-based cacher backend implementation
+
+*/
+
 use super::Cache;
 use std::{
     fs::File,

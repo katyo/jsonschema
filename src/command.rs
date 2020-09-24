@@ -1,43 +1,42 @@
-#[cfg(feature = "schemastore")]
-mod search;
+/*!
 
-#[cfg(feature = "schemastore")]
-mod retrieve;
+Command-line arguments and command processing
 
-#[cfg(feature = "infers")]
-mod infer;
+*/
 
-#[cfg(any(
-    feature = "jsonschema",
-    feature = "jsonschema-valid",
-    feature = "valico"
-))]
-mod validate;
+pub(self) use std::path::{Path, PathBuf};
+pub(self) use structopt::StructOpt;
 
-pub use std::path::{Path, PathBuf};
-pub use structopt::StructOpt;
-
-pub use crate::{utils, Error, Format, Result, State};
+pub(self) use crate::{utils, Error, Format, Result, State};
 
 #[cfg(any(
     feature = "jsonschema",
     feature = "jsonschema-valid",
     feature = "valico"
 ))]
-pub use crate::{CompiledSchema, Standard, Validator};
+pub(self) use crate::{CompiledSchema, Standard, Validator};
 
+/// Command result
 pub type CmdResult = Result<u32>;
 
 #[cfg(feature = "http_req")]
-pub use crate::Uri;
+pub(self) use crate::Uri;
 
-static LOG_LEVELS: &[&str] = &["error", "warn", "info", "debug", "trace"];
+/// Logging levels list
+const LOG_LEVELS: &[&str] = &["error", "warn", "info", "debug", "trace"];
 
 macro_rules! decl_commands {
     ($(
         $(#[$attr:meta])*
         $type:ident $name:ident;
     )*) => {
+        // Declare modules
+        $(
+            $(#[$attr])*
+            mod $name;
+        )*
+
+        /// Supported sub-commands
         #[derive(StructOpt, Debug)]
         pub enum Command {
             $(
@@ -47,6 +46,7 @@ macro_rules! decl_commands {
         }
 
         impl Command {
+            /// Run sub-command
             pub fn run(&self, args: &Args, state: &State) -> CmdResult {
                 #[allow(unused_doc_comments)]
                 match self {
@@ -82,6 +82,7 @@ decl_commands! {
     Validate validate;
 }
 
+/// Command-line arguments
 #[derive(StructOpt, Debug)]
 pub struct Args {
     /// Logging level
@@ -122,10 +123,12 @@ pub struct Args {
 }
 
 impl Args {
+    /// Run program
     pub fn run(&self, state: &State) -> CmdResult {
         self.command.run(self, state)
     }
 
+    /// Check output filepath to prevent unwanted overwriting
     pub fn check_output_file(&self, path: impl AsRef<Path>) -> Result<()> {
         let path = path.as_ref();
         if path.is_dir() {

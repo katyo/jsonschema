@@ -1,3 +1,9 @@
+/*!
+
+Embedded HTTP client with support for redirects and caching
+
+*/
+
 use crate::Cache;
 use http_req::{error::Error, request::Request, response::Response, uri::Uri};
 use serde::{de::DeserializeOwned, Deserialize, Serialize};

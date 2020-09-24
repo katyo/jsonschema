@@ -1,3 +1,9 @@
+/*!
+
+Cache management
+
+*/
+
 use crate::Args;
 
 #[cfg(feature = "cache")]

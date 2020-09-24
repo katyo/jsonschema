@@ -1,5 +1,11 @@
-pub use crate::{Args, Error, Result};
-pub use std::path::Path;
+/*!
+
+Validating JSON-like data with support for multiple validators
+
+*/
+
+pub(self) use crate::{Error, Result};
+pub(self) use std::path::Path;
 
 macro_rules! decl_standards {
     ($(
@@ -57,7 +63,7 @@ macro_rules! decl_validators {
         $(#[$attr:meta])*
         $type:ident $name:ident;
     )*) => {
-        /// Define modules
+        // Define modules
         $(
             $(#[$attr])*
             mod $name;
