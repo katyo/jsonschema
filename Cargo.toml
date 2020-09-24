@@ -125,6 +125,8 @@ txt-parsers = ["json5", "yaml", "toml", "ron"]
 bin-parsers = ["bson", "cbor", "pickle"]
 all-parsers = ["txt-parsers", "bin-parsers"]
 
+rustls = ["http_req/rustls"]
+
 [profile.release]
 opt-level = "s"
 lto = "thin"
