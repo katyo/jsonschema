@@ -47,6 +47,10 @@ optional = true
 version = "0.9"
 optional = true
 
+[dependencies.hmac-sha256]
+version = "0.1"
+optional = true
+
 [dependencies.regex]
 version = "1"
 optional = true
@@ -110,7 +114,10 @@ full = ["schemastore", "cache", "infers", "all-validators", "all-parsers"]
 minimal = ["jsonschema"]
 
 schemastore = ["http_req", "serde_with", "regex"]
-cache = ["serde", "base64", "crypto-hashes"]
+cache = ["serde", "base64",
+  #"crypto-hashes"
+  "hmac-sha256"
+]
 
 all-validators = ["jsonschema", "jsonschema-valid", "valico"]
 

@@ -1,5 +1,4 @@
 use crate::Args;
-use crypto_hashes::{digest::Digest, sha3::Sha3_256};
 use serde::{de::DeserializeOwned, Serialize};
 
 #[cfg(feature = "sled")]
@@ -86,12 +85,7 @@ where
     json::to_vec(key)
         .map_err(|error| log::error!("Unable to serialize cache key due to: {}", error))
         .ok()
-        .map(|key| {
-            let mut hasher = Sha3_256::default();
-            hasher.update(&key);
-            let hash = hasher.finalize();
-            Vec::from(&hash as &[u8])
-        })
+        .map(_sha256)
 }
 
 fn _serialize_val<V>(val: &V) -> Option<Vec<u8>>
@@ -101,4 +95,19 @@ where
     json::to_vec(val)
         .map_err(|error| log::error!("Unable to serialize cache value due to: {}", error))
         .ok()
+}
+
+fn _sha256(data: impl AsRef<[u8]>) -> Vec<u8> {
+    #[cfg(feature = "crypto-hashes")]
+    use crypto_hashes::{digest::Digest, sha3::Sha3_256 as Hasher};
+
+    #[cfg(feature = "hmac-sha256")]
+    use hmac_sha256::Hash as Hasher;
+
+    let mut hasher = Hasher::default();
+
+    hasher.update(data.as_ref());
+    let hash = hasher.finalize();
+
+    Vec::from(&hash as &[u8])
 }
