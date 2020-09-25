@@ -138,6 +138,8 @@ jobs:
             ~/.cargo/git
           key: ${{ runner.os }}-cargo-rust_${{ matrix.rust }}-${{ hashFiles('**/Cargo.lock') }}
       - uses: actions/cache@v2
+        if: |
+          !startsWith(matrix.os, 'macos')
         with:
           path: target
           key: ${{ runner.os }}-build-rust_${{ matrix.rust }}-debug-${{ hashFiles('**/Cargo.lock') }}
@@ -194,6 +196,8 @@ jobs:
             ~/.cargo/git
           key: ${{ runner.os }}-cargo-rust_stable-${{ hashFiles('**/Cargo.lock') }}
       - uses: actions/cache@v2
+        if: |
+          !startsWith(matrix.os, 'macos')
         with:
           path: target
           key: ${{ runner.os }}-build-rust_stable-target_${{ matrix.target }}-release-${{ hashFiles('**/Cargo.lock') }}
