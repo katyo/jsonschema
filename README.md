@@ -3,6 +3,7 @@
 [![License: Apache-2.0](https://img.shields.io/badge/License-Apache--2.0-brightgreen.svg)](https://opensource.org/licenses/Apache-2.0)
 [![Crates.io Package](https://img.shields.io/crates/v/jsonst.svg?style=popout)](https://crates.io/crates/jsonst)
 [![Docs.rs API Docs](https://docs.rs/jsonst/badge.svg)](https://docs.rs/jsonst)
+[![Rust](https://github.com/katyo/jsonschema/workflows/Rust/badge.svg)](https://github.com/katyo/jsonschema/actions?query=workflow%3ARust)
 
 This is all-in-one toolset for __JSON Schema__.
 
