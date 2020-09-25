@@ -14,6 +14,7 @@ jobs:
         with:
           command: fmt
           args: --all -- --check
+
   clippy:
     runs-on: ubuntu-latest
     steps:
@@ -26,10 +27,13 @@ jobs:
       - uses: actions-rs/clippy-check@v1
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
+
   check:
-    runs-on: ubuntu-latest
+    needs:
+      - format
+      - clippy
     strategy:
-      fail-fast: false
+      fail-fast: ${{ github.event_name == 'pull_request' || startsWith(github.ref, 'refs/tags/') }}
       matrix:
         features:
           - valico
@@ -51,6 +55,7 @@ jobs:
           - minimal,bin-parsers
           - minimal,all-parsers
           - full
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
       - uses: actions-rs/toolchain@v1
@@ -62,10 +67,12 @@ jobs:
         with:
           command: check
           args: --no-default-features --features ${{ matrix.features }}
+
   build:
-    runs-on: ${{ matrix.os }}
+    needs:
+      - check
     strategy:
-      fail-fast: false
+      fail-fast: ${{ github.event_name == 'pull_request' || startsWith(github.ref, 'refs/tags/') }}
       matrix:
         os:
           - ubuntu-latest
@@ -74,6 +81,7 @@ jobs:
         rust:
           - stable
           - nightly
+    runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v2
       - name: Setup Rust ${{ matrix.rust }}
@@ -82,6 +90,111 @@ jobs:
           toolchain: ${{ matrix.rust }}
           override: true
       - name: Build with Rust ${{ matrix.rust }}
-        run: cargo build
+        uses: actions-rs/cargo@v1
+        with:
+          command: build
+          args: --verbose
       - name: Test with Rust ${{ matrix.rust }}
-        run: cargo test
+        uses: actions-rs/cargo@v1
+        with:
+          command: test
+
+  build-release:
+    if: github.repository == 'katyo/jsonschema' && startsWith(github.ref, 'refs/tags/v')
+    needs:
+      - build
+    strategy:
+      fail-fast: true
+      matrix:
+        include:
+          - name: linux-x86_64
+            os: ubuntu-latest
+            target: x86_64-unknown-linux-gnu
+            ext:
+          - name: linux-i686
+            os: ubuntu-latest
+            target: i686-unknown-linux-gnu
+            ext:
+          - name: windows-x86_64
+            os: windows-latest
+            target: x86_64-pc-windows-msvc
+            ext: .exe
+          - name: windows-i686
+            os: windows-latest
+            target: i686-pc-windows-msvc
+            ext: .exe
+          - name: macos-x86_64
+            os: macos-latest
+            target: x86_64-apple-darwin
+            ext:
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup Rust stable [${{ matrix.target }}]
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          target: ${{ matrix.target }}
+          override: true
+      - name: Build release
+        uses: actions-rs/cargo@v1
+        env:
+          RUSTFLAGS: -C link-arg=-s
+        with:
+          command: build
+          args: --release
+      - name: Compress binary
+        uses: svenstaro/upx-action@v2
+        with:
+          file: target/release/jsonst${{ matrix.ext }}
+          args: --ultra-brute
+      - name: Create archive
+        uses: papeloto/action-zip@v1
+        with:
+          files: target/release/jsonst${{ matrix.ext }} README.md LICENSE.txt
+          dest: jsonst_${{ matrix.name }}.zip
+          recursive: false
+      - name: Upload archive
+        uses: actions/upload-artifact@v2
+        with:
+          name: binary
+          path: jsonst_${{ matrix.name }}.zip
+
+  publish-release:
+    if: github.repository == 'katyo/jsonschema' && startsWith(github.ref, 'refs/tags/v')
+    needs:
+      - build-release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download archive
+        uses: actions/download-artifact@v2
+        with:
+          name: binary
+      - name: Create release
+        uses: softprops/action-gh-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          files: '*.zip'
+          prerelease: true
+          draft: true
+
+  publish-package:
+    if: github.repository == 'katyo/jsonschema' && startsWith(github.ref, 'refs/tags/v')
+    needs:
+      - build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          override: true
+      - name: Publish package
+        uses: actions-rs/cargo@v1
+        env:
+          CARGO_REGISTRY_TOKEN: ${{ secrets.CRATES_TOKEN }}
+        with:
+          command: publish
+          args: --no-verify --dry-run
