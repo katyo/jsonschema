@@ -89,9 +89,13 @@ pub struct Args {
     #[structopt(short = "l", long, env, default_value = "warn", possible_values = LOG_LEVELS)]
     pub log_level: String,
 
-    /// Verbose output
+    /// Verbose mode
     #[structopt(short, long)]
     pub verbose: bool,
+
+    /// Quiet mode
+    #[structopt(short, long)]
+    pub quiet: bool,
 
     /// Force overwrite
     #[structopt(short = "F", long)]

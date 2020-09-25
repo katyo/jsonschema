@@ -133,11 +133,11 @@ macro_rules! decl_validators {
 
         impl<'c> CompiledSchema<'c> {
             /// Validate JSON data
-            pub fn validate_data(&self, path: &Path, data: &json::Value, verbose: bool) -> Result<u32> {
+            pub fn validate_data(&self, path: &Path, data: &json::Value, quiet: bool) -> Result<u32> {
                 match self {
                     $(
                         $(#[$attr])*
-                        Self::$type(compiled_schema) => compiled_schema.validate(path, data, verbose),
+                        Self::$type(compiled_schema) => compiled_schema.validate(path, data, quiet),
                     )*
                 }
             }

@@ -103,6 +103,6 @@ impl Command {
                 Error::Parse
             })?;
         let data = format.parse_data(topic, path, &data).ok_or(Error::Parse)?;
-        schema.validate_data(path, &data, args.verbose)
+        schema.validate_data(path, &data, args.quiet)
     }
 }

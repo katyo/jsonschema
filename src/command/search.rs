@@ -22,17 +22,20 @@ impl Command {
         }
         .ok_or(Error::Query)?;
 
-        println!("Found {} schemas", list.len());
+        if !args.quiet {
+            println!("Found {} schemas", list.len());
+        }
 
         if args.verbose {
-            for schema in list {
+            for schema in &list {
                 println!("{}", schema);
             }
-        } else {
-            for schema in list {
+        } else if !args.quiet {
+            for schema in &list {
                 println!("- {}", schema.name);
             }
         }
-        Ok(0)
+
+        Ok(list.len() as u32)
     }
 }

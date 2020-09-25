@@ -21,26 +21,23 @@ impl<'c> CompiledSchema<'c> {
             .map(|schema| Self { schema })
     }
 
-    pub fn validate(&self, path: &Path, data: &json::Value, verbose: bool) -> Result<u32> {
-        Ok(if verbose {
-            if let Err(errors) = self.schema.validate(data) {
-                println!("Data is not valid");
-                let mut n = 0;
-                for error in errors {
-                    n += 1;
-                    eprintln!("{} {}", path.display(), error)
-                }
-                n
-            } else {
-                println!("Data is valid");
-                0
-            }
-        } else {
-            if self.schema.validate(data).is_err() {
+    pub fn validate(&self, path: &Path, data: &json::Value, quiet: bool) -> Result<u32> {
+        Ok(if let Err(errors) = self.schema.validate(data) {
+            if quiet {
                 1
             } else {
-                0
+                println!("Data is not valid");
+                errors
+                    .map(|error| {
+                        println!("{}: {}", path.display(), error);
+                    })
+                    .count() as u32
             }
+        } else {
+            if !quiet {
+                println!("Data is valid");
+            }
+            0
         })
     }
 }

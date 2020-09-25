@@ -29,7 +29,7 @@ impl<'c> CompiledSchema<'c> {
             })
     }
 
-    pub fn validate(&self, path: &Path, data: &json::Value, verbose: bool) -> Result<u32> {
+    pub fn validate(&self, path: &Path, data: &json::Value, quiet: bool) -> Result<u32> {
         let schema = self.scope.resolve(&self.url).ok_or_else(|| {
             log::error!(
                 "Unable to resolve previously compiled valico JSON Schema: {}",
@@ -39,22 +39,20 @@ impl<'c> CompiledSchema<'c> {
         })?;
         let result = schema.validate(data);
 
-        Ok(if verbose {
-            if result.errors.len() > 0 {
+        Ok(if result.errors.len() == 0 {
+            if !quiet {
+                println!("Data is valid");
+            }
+            0
+        } else {
+            if !quiet {
                 println!("Data is not valid");
                 for error in &result.errors {
                     eprintln!("{} {}", path.display(), error)
                 }
                 result.errors.len() as u32
             } else {
-                println!("Data is valid");
-                0
-            }
-        } else {
-            if result.errors.len() > 0 {
                 1
-            } else {
-                0
             }
         })
     }
