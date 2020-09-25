@@ -214,7 +214,7 @@ jobs:
         with:
           files: target/release/jsonst${{ matrix.ext }} README.md LICENSE.txt
           dest: jsonst_${{ matrix.name }}.zip
-          recursive: false
+          recursive: true
       - name: Upload archive
         uses: actions/upload-artifact@v2
         with:
