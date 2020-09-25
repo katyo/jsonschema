@@ -1,0 +1,75 @@
+name: Rust
+on: [push, pull_request]
+jobs:
+  format:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          override: true
+      - name: Format
+        uses: actions-rs/cargo@v1
+        with:
+          command: fmt
+          args: --all -- --check
+  check:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        features:
+          - valico
+          - jsonschema
+          - jsonschema-valid
+          - all-validators
+          - schemastore
+          - schemastore,file-cache
+          - schemastore,sled-cache
+          - infers
+          - minimal,json5
+          - minimal,yaml
+          - minimal,toml
+          - minimal,ron
+          - minimal,bson
+          - minimal,cbor
+          - minimal,pickle
+          - minimal,txt-parsers
+          - minimal,bin-parsers
+          - minimal,all-parsers
+          - full
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          override: true
+      - name: Check features set ${{ matrix.features }}
+        uses: actions-rs/cargo@v1
+        with:
+          command: check
+          args: --no-default-features --features ${{ matrix.features }}
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - ubuntu-latest
+          - windows-latest
+          - macOS-latest
+        rust:
+          - stable
+          - nightly
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup Rust ${{ matrix.rust }}
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: ${{ matrix.rust }}
+          override: true
+      - name: Build with Rust ${{ matrix.rust }}
+        run: cargo build
+      - name: Test with Rust ${{ matrix.rust }}
+        run: cargo test
