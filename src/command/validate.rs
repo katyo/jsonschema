@@ -33,7 +33,7 @@ pub struct Command {
 }
 
 impl Command {
-    pub fn run(&self, args: &Args, state: &State) -> CmdResult {
+    pub fn run(&self, args: &Args, _state: &State) -> CmdResult {
         let schema = if self.schema.is_file() {
             let topic = "JSON Schema";
             let path = &self.schema;
@@ -52,12 +52,30 @@ impl Command {
                 .parse_data(topic, path, &data)
                 .ok_or(Error::Parse)?
         } else {
-            let pattern = self.schema.display().to_string();
-            state
-                .schema_store
-                .get_one(&[&pattern], true, false)
-                .ok_or(Error::Query)?
-                .1
+            #[cfg(feature = "schemastore")]
+            {
+                let pattern = self.schema.display().to_string();
+                _state
+                    .schema_store
+                    .get_one(&[&pattern], true, false)
+                    .ok_or_else(|| {
+                        log::error!(
+                            "JSON Schema '{}' not found nor in filesystem nor on schemastore.org",
+                            self.schema.display()
+                        );
+                        Error::Query
+                    })?
+                    .1
+            }
+
+            #[cfg(not(feature = "schemastore"))]
+            {
+                log::error!(
+                    "JSON Schema '{}' not found in filesystem",
+                    self.schema.display()
+                );
+                return Err(Error::Query);
+            }
         };
 
         let schema = self.validator.compile_schema(&schema, self.standard)?;

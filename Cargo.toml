@@ -114,52 +114,65 @@ optional = true
 default = ["full"]
 
 full = [
-  "schemastore",
-  "cache",
-  "infers",
-  "all-validators",
-  "all-parsers",
+    "schemastore",
+    "file-cache",
+    "infers",
+    "all-validators",
+    "all-parsers",
 ]
 
+# Validation command only using valico validator
 minimal = [
-  "valico",
+    "serde",
+    "valico",
 ]
 
+# Enables schemastore.org integration
 schemastore = [
-  "http_req",
-  "serde_with",
-  "regex",
+    "http_req",
+    "serde",
+    "serde_with",
+    "regex",
 ]
 
-cache = [
-  "serde",
-  "base64",
-  #"crypto-hashes",
-  "hmac-sha256",
+# Enables caching using file backend
+file-cache = [
+    #"crypto-hashes",
+    "hmac-sha256",
+    "base64",
 ]
 
+# Enables caching suing sled backend
+sled-cache = [
+    "sled"
+]
+
+# Enables all supported validators
 all-validators = [
-  "jsonschema",
-  "jsonschema-valid",
-  "valico",
+    "jsonschema",
+    "jsonschema-valid",
+    "valico",
 ]
 
+# Enables parsers for all supported text formats
 txt-parsers = [
-  "json5",
-  "yaml",
-  "toml",
-  "ron",
+    "json5",
+    "yaml",
+    "toml",
+    "ron",
 ]
 
+# Enables parsers for all supported binary formats
 bin-parsers = [
-  "bson",
-  "cbor",
-  "pickle",
+    "bson",
+    "cbor",
+    "pickle",
 ]
 
+# Enables parsers for all supported formats
 all-parsers = [
-  "txt-parsers",
-  "bin-parsers",
+    "txt-parsers",
+    "bin-parsers",
 ]
 
 rustls = ["http_req/rustls"]

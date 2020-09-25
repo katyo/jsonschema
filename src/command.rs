@@ -7,14 +7,22 @@ Command-line arguments and command processing
 pub(self) use std::path::{Path, PathBuf};
 pub(self) use structopt::StructOpt;
 
-pub(self) use crate::{utils, Error, Format, Result, State};
+pub(self) use crate::{utils, Error, Result, State};
 
 #[cfg(any(
     feature = "jsonschema",
     feature = "jsonschema-valid",
-    feature = "valico"
+    feature = "valico",
 ))]
 pub(self) use crate::{CompiledSchema, Standard, Validator};
+
+#[cfg(any(
+    feature = "jsonschema",
+    feature = "jsonschema-valid",
+    feature = "valico",
+    feature = "infers",
+))]
+pub(self) use crate::Format;
 
 /// Command result
 pub type CmdResult = Result<u32>;

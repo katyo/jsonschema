@@ -39,5 +39,5 @@ impl Args {
     }
 
     #[cfg(not(feature = "cache"))]
-    pub fn fix_cache(&self) {}
+    pub fn fix_cache(&mut self) {}
 }
