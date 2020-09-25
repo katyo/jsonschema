@@ -103,5 +103,5 @@ impl Cache {
 
 fn _key_path(db: &Db, key: &[u8]) -> PathBuf {
     let key = base64::encode_config(key, base64::URL_SAFE_NO_PAD);
-    db.join(&key).into()
+    db.join(&key)
 }

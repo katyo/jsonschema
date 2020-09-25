@@ -64,7 +64,7 @@ impl Command {
 
         let topic = "data";
 
-        if self.input.len() > 0 {
+        if !self.input.is_empty() {
             let mut errors = 0u32;
             for path in &self.input {
                 if !path.is_file() {

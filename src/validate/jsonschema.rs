@@ -28,18 +28,19 @@ impl<'c> CompiledSchema<'c> {
             } else {
                 1
             }
-        } else {
-            if let Err(errors) = self.schema.validate(data) {
-                println!("Data is not valid");
+        } else if let Err(errors) = self.schema.validate(data) {
+            println!("Data is not valid");
+            #[allow(clippy::suspicious_map)]
+            {
                 errors
                     .map(|error| {
                         println!("{}: {}", path.display(), error);
                     })
                     .count() as u32
-            } else {
-                println!("Data is valid");
-                0
             }
+        } else {
+            println!("Data is valid");
+            0
         })
     }
 }

@@ -27,11 +27,14 @@ impl<'c> CompiledSchema<'c> {
                 1
             } else {
                 println!("Data is not valid");
-                errors
-                    .map(|error| {
-                        println!("{}: {}", path.display(), error);
-                    })
-                    .count() as u32
+                #[allow(clippy::suspicious_map)]
+                {
+                    errors
+                        .map(|error| {
+                            println!("{}: {}", path.display(), error);
+                        })
+                        .count() as u32
+                }
             }
         } else {
             if !quiet {

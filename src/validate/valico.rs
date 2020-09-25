@@ -35,25 +35,23 @@ impl<'c> CompiledSchema<'c> {
                 "Unable to resolve previously compiled valico JSON Schema: {}",
                 self.url
             );
-            return Error::Query;
+            Error::Query
         })?;
         let result = schema.validate(data);
 
-        Ok(if result.errors.len() == 0 {
+        Ok(if result.errors.is_empty() {
             if !quiet {
                 println!("Data is valid");
             }
             0
-        } else {
-            if !quiet {
-                println!("Data is not valid");
-                for error in &result.errors {
-                    eprintln!("{} {}", path.display(), error)
-                }
-                result.errors.len() as u32
-            } else {
-                1
+        } else if !quiet {
+            println!("Data is not valid");
+            for error in &result.errors {
+                eprintln!("{} {}", path.display(), error)
             }
+            result.errors.len() as u32
+        } else {
+            1
         })
     }
 }

@@ -30,7 +30,7 @@ impl Args {
         if self.no_cache {
             self.cache_dir = None;
         } else if self.cache_dir.is_none() {
-            self.cache_dir = dirs::cache_dir().map(|path| path.join(env!("CARGO_PKG_NAME")).into());
+            self.cache_dir = dirs::cache_dir().map(|path| path.join(env!("CARGO_PKG_NAME")));
             if self.cache_dir.is_none() {
                 self.no_cache = true;
                 log::warn!("Unable to guess cache directory");

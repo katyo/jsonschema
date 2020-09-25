@@ -13,7 +13,7 @@ pub struct Command {
 
 impl Command {
     pub fn run(&self, args: &Args, state: &State) -> CmdResult {
-        let list = if self.patterns.len() == 0 {
+        let list = if self.patterns.is_empty() {
             state.schema_store.list().map(|list| list.schemas)
         } else {
             state
