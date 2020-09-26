@@ -182,7 +182,7 @@ jobs:
     needs:
       - build
     strategy:
-      fail-fast: true
+      fail-fast: false
       matrix:
         include:
           - name: linux-x86_64
@@ -207,6 +207,11 @@ jobs:
             ext:
     runs-on: ${{ matrix.os }}
     steps:
+      - if: matrix.name == 'linux-i686'
+        run: |
+          sudo dpkg --add-architecture i386
+          sudo apt-get update
+          sudo apt-get install -y gcc-multilib libssl-dev:i386 pkg-config-x86-64-linux-gnux32
       - uses: actions/checkout@v2
       - uses: actions-rs/toolchain@v1
         with:
@@ -228,20 +233,22 @@ jobs:
       - name: Build release
         uses: actions-rs/cargo@v1
         env:
+          PKG_CONFIG_i686_unknown_linux_gnu: i686-linux-gnu-pkg-config
           RUSTFLAGS: -C link-arg=-s
         with:
           command: build
-          args: --release
+          args: --release --target ${{ matrix.target }}
       - name: Compress binary
         if: false
         uses: svenstaro/upx-action@v2
         with:
-          file: target/release/jsonst${{ matrix.ext }}
+
+          file: target/${{ matrix.target }}/release/jsonst${{ matrix.ext }}
           args: --ultra-brute
       - name: Create archive
         uses: papeloto/action-zip@v1
         with:
-          files: target/release/jsonst${{ matrix.ext }} README.md LICENSE.txt
+          files: target/${{ matrix.target }}/release/jsonst${{ matrix.ext }} README.md LICENSE.txt
           dest: jsonst_${{ matrix.name }}.zip
           recursive: true
       - name: Upload archive
