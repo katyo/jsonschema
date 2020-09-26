@@ -135,16 +135,21 @@ schemastore = [
     "regex",
 ]
 
-# Enables caching using file backend
-file-cache = [
+cache = [
     #"crypto-hashes",
     "hmac-sha256",
+]
+
+# Enables caching using file backend
+file-cache = [
+    "cache",
     "base64",
 ]
 
 # Enables caching suing sled backend
 sled-cache = [
-    "sled"
+    "cache",
+    "sled",
 ]
 
 # Enables all supported validators
