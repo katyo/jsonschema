@@ -108,10 +108,11 @@ optional = true
 
 [dependencies.http_req]
 version = "0.7"
+default-features = false
 optional = true
 
 [features]
-default = ["full"]
+default = ["full", "native-tls"]
 
 full = [
     "schemastore",
@@ -180,7 +181,11 @@ all-parsers = [
     "bin-parsers",
 ]
 
-rustls = ["http_req/rustls"]
+# Use native TLS solution
+native-tls = ["http_req/native-tls"]
+
+# Use Rust TLS solution
+rust-tls = ["http_req/rust-tls"]
 
 [profile.release]
 opt-level = "s"

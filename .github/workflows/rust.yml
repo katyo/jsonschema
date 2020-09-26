@@ -61,11 +61,11 @@ jobs:
           - name: all-validators
             features: all-validators
           - name: schemastore
-            features: schemastore
+            features: schemastore,native-tls
           - name: schemastore-file-cache
-            features: schemastore,file-cache
+            features: schemastore,file-cache,native-tls
           - name: schemastore-sled-cache
-            features: schemastore,sled-cache
+            features: schemastore,sled-cache,native-tls
           - name: infers
             features: infers
           - name: minimal-json5
