@@ -209,6 +209,7 @@ jobs:
           command: build
           args: --release
       - name: Compress binary
+        if: false
         uses: svenstaro/upx-action@v2
         with:
           file: target/release/jsonst${{ matrix.ext }}
