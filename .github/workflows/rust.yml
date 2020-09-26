@@ -247,7 +247,7 @@ jobs:
   publish-package:
     if: github.repository == 'katyo/jsonschema' && startsWith(github.ref, 'refs/tags/v')
     needs:
-      - build
+      - publish-release
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
