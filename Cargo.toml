@@ -1,9 +1,9 @@
 [package]
 name = "jsonst"
 description = "JSON Schema hacking toolset"
-version = "0.1.0"
+version = "0.2.0"
 authors = ["K. <kayo@illumium.org>"]
-edition = "2018"
+edition = "2021"
 readme = "README.md"
 homepage = "https://github.com/katyo/jsonschema"
 repository = "https://github.com/katyo/jsonschema"
@@ -15,14 +15,14 @@ categories = ["command-line-utilities"]
 status = "experimental"
 
 [dependencies]
-dirs = "3"
+dirs = "4"
 paw = "1"
 log = "0.4"
 pretty_env_logger = "0.4"
 url = "2"
 
 [dependencies.jsonschema]
-version = "0.3"
+version = "0.16"
 optional = true
 
 [dependencies.jsonschema-valid]
@@ -43,15 +43,15 @@ version = "1"
 optional = true
 
 [dependencies.base64]
-version = "0.12"
+version = "0.13"
 optional = true
 
 [dependencies.crypto-hashes]
-version = "0.9"
+version = "0.10"
 optional = true
 
 [dependencies.hmac-sha256]
-version = "0.1"
+version = "1"
 optional = true
 
 [dependencies.regex]
@@ -68,7 +68,7 @@ package = "serde_json"
 version = "1"
 
 [dependencies.json5]
-version = "0.2"
+version = "0.4"
 optional = true
 
 [dependencies.yaml]
@@ -81,11 +81,11 @@ version = "0.5"
 optional = true
 
 [dependencies.ron]
-version = "0.6"
+version = "0.7"
 optional = true
 
 [dependencies.bson]
-version = "1"
+version = "2"
 optional = true
 
 [dependencies.cbor]
@@ -95,7 +95,7 @@ optional = true
 
 [dependencies.pickle]
 package = "serde-pickle"
-version = "0.6"
+version = "1"
 optional = true
 
 [dependencies.structopt]
@@ -107,7 +107,7 @@ version = "0.34"
 optional = true
 
 [dependencies.http_req]
-version = "0.7"
+version = "0.8"
 default-features = false
 optional = true
 

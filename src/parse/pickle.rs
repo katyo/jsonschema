@@ -4,4 +4,8 @@
 
 */
 
-pub use pickle::from_slice;
+pub fn from_slice<'de, T: serde::Deserialize<'de>>(
+    data: &[u8],
+) -> pickle::Result<T> {
+    pickle::from_slice(data, pickle::de::DeOptions::default())
+}

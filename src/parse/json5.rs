@@ -10,6 +10,6 @@ pub fn from_slice<'a, T>(s: &'a [u8]) -> json5::Result<T>
 where
     T: serde::Deserialize<'a>,
 {
-    let s = std::str::from_utf8(s).map_err(|error| json5::Error::Message(error.to_string()))?;
+    let s = std::str::from_utf8(s).map_err(|error| json5::Error::Message { msg: error.to_string(), location: None })?;
     from_str(s)
 }

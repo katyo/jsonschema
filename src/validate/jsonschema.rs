@@ -5,20 +5,27 @@
 */
 
 use super::{Error, Path, Result, Standard};
-use jsonschema::{Draft, JSONSchema};
+use jsonschema::{Draft, JSONSchema, CompilationOptions};
 
 pub struct CompiledSchema<'c> {
-    schema: JSONSchema<'c>,
+    schema: JSONSchema,
+    _phantom: core::marker::PhantomData<&'c char>,
 }
 
 impl<'c> CompiledSchema<'c> {
     pub fn compile(schema: &'c json::Value, std: Option<Standard>) -> Result<Self> {
-        JSONSchema::compile(&schema, std.map(conv_std))
+        let mut opts = CompilationOptions::default();
+
+        if let Some(std) = std {
+            opts.with_draft(conv_std(std));
+        }
+
+        opts.compile(&schema)
             .map_err(|error| {
                 log::error!("Unable to compile JSON Schema due to: {}", error);
                 Error::Compile
             })
-            .map(|schema| Self { schema })
+            .map(|schema| Self { schema, _phantom: core::marker::PhantomData })
     }
 
     pub fn validate(&self, path: &Path, data: &json::Value, quiet: bool) -> Result<u32> {

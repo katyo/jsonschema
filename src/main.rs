@@ -16,8 +16,7 @@ mod schemastore;
 #[cfg(feature = "http_req")]
 mod http;
 
-#[cfg(feature = "http_req")]
-pub use http_req::uri::Uri;
+pub use url::Url as Uri;
 
 #[cfg(feature = "schemastore")]
 pub use schemastore::SchemaStore;

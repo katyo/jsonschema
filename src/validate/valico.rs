@@ -10,7 +10,7 @@ use valico::json_schema::Scope;
 pub struct CompiledSchema<'c> {
     scope: Scope,
     url: url::Url,
-    _phantom: std::marker::PhantomData<&'c char>,
+    _phantom: core::marker::PhantomData<&'c char>,
 }
 
 impl<'c> CompiledSchema<'c> {
@@ -25,7 +25,7 @@ impl<'c> CompiledSchema<'c> {
             .map(|url| Self {
                 scope,
                 url,
-                _phantom: std::marker::PhantomData,
+                _phantom: core::marker::PhantomData,
             })
     }
 

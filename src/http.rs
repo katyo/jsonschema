@@ -7,7 +7,10 @@ Embedded HTTP client with support for redirects and caching
 use crate::Cache;
 use http_req::{error::Error, request::Request, response::Response, uri::Uri};
 use serde::{de::DeserializeOwned, Deserialize, Serialize};
-use std::time::{Duration, SystemTime};
+use std::{
+    convert::TryInto,
+    time::{Duration, SystemTime},
+};
 
 const REDIRECT_LIMIT: u32 = 5; // five times
 const UPDATE_INTERVAL: Duration = Duration::from_secs(5 * 60); // five minutes
@@ -161,13 +164,22 @@ fn with_redirects<F: FnMut(&Uri) -> Result<Response, Error>>(
 ) -> Option<Response> {
     let mut right_redirects = REDIRECT_LIMIT;
 
-    let mut url = url
-        .parse()
-        .map_err(|error| log::warn!("Invalid url '{}' due to: {}", url, error))
-        .ok()?;
+    let mut url = url.to_string();
 
     loop {
-        let res = mk_req(&url)
+        let urlp = url
+            .as_str()
+            .try_into()
+            .map_err(|error| {
+                if right_redirects < REDIRECT_LIMIT {
+                    log::warn!("Invalid redirect url '{}' due to: {}", url, error)
+                } else {
+                    log::warn!("Invalid url '{}' due to: {}", url, error)
+                }
+            })
+            .ok()?;
+
+        let res = mk_req(&urlp)
             .map_err(|error| {
                 log::warn!("Invalid request '{}' due to: {}", url.to_string(), error);
             })
@@ -184,16 +196,7 @@ fn with_redirects<F: FnMut(&Uri) -> Result<Response, Error>>(
         right_redirects -= 1;
 
         if let Some(location) = res.headers().get("Location") {
-            url = location
-                .parse()
-                .map_err(|error| {
-                    log::warn!(
-                        "Invalid redirect url '{}' due to: {}",
-                        url.to_string(),
-                        error
-                    )
-                })
-                .ok()?;
+            url = location.into();
         } else {
             break;
         }
