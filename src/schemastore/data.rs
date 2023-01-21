@@ -79,12 +79,11 @@ impl Display for SchemaInfo {
 }
 
 /// Wrapped string-like data
+#[serde_with::serde_as]
 #[derive(Clone, Serialize, Deserialize)]
 pub struct Wrapped<T>(
-    #[serde(
-        with = "serde_with::rust::display_fromstr",
-        bound = "T: Display + FromStr, T::Err: Display"
-    )]
+    #[serde_as(as = "serde_with::DisplayFromStr")]
+    #[serde(bound = "T: Display + FromStr, T::Err: Display")]
     T,
 );
 

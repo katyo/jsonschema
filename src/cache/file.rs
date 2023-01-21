@@ -102,6 +102,8 @@ impl Cache {
 }
 
 fn _key_path(db: &Db, key: &[u8]) -> PathBuf {
-    let key = base64::encode_config(key, base64::URL_SAFE_NO_PAD);
+    use base64::Engine;
+
+    let key = base64::engine::general_purpose::URL_SAFE_NO_PAD.encode(key);
     db.join(&key)
 }
