@@ -1,15 +1,17 @@
 name: Rust
-on: [push, pull_request]
+on:
+  - push
+  - pull_request
 jobs:
   format:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - uses: actions-rs/toolchain@v1
         with:
           toolchain: stable
           override: true
-      - uses: actions/cache@v2
+      - uses: actions/cache@v3
         with:
           path: |
             ~/.cargo/registry
@@ -24,13 +26,13 @@ jobs:
   clippy:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v3
       - uses: actions-rs/toolchain@v1
         with:
           toolchain: stable
           components: clippy
           override: true
-      - uses: actions/cache@v2
+      - uses: actions/cache@v3
         with:
           path: |
             ~/.cargo/registry
@@ -47,12 +49,12 @@ jobs:
   docs:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v3
       - uses: actions-rs/toolchain@v1
         with:
           toolchain: stable
           override: true
-      - uses: actions/cache@v2
+      - uses: actions/cache@v3
         with:
           path: |
             ~/.cargo/registry
@@ -114,18 +116,18 @@ jobs:
             features: minimal,all-parsers
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - uses: actions-rs/toolchain@v1
         with:
           toolchain: stable
           override: true
-      - uses: actions/cache@v2
+      - uses: actions/cache@v3
         with:
           path: |
             ~/.cargo/registry
             ~/.cargo/git
           key: ${{ runner.os }}-cargo-rust_stable-features_${{ matrix.name }}-${{ hashFiles('**/Cargo.lock') }}
-      - uses: actions/cache@v2
+      - uses: actions/cache@v3
         with:
           path: target
           key: ${{ runner.os }}-build-rust_stable-features_${{ matrix.name }}-${{ hashFiles('**/Cargo.lock') }}
@@ -150,18 +152,18 @@ jobs:
           - nightly
     runs-on: ${{ matrix.os }}
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - uses: actions-rs/toolchain@v1
         with:
           toolchain: ${{ matrix.rust }}
           override: true
-      - uses: actions/cache@v2
+      - uses: actions/cache@v3
         with:
           path: |
             ~/.cargo/registry
             ~/.cargo/git
           key: ${{ runner.os }}-cargo-rust_${{ matrix.rust }}-${{ hashFiles('**/Cargo.lock') }}
-      - uses: actions/cache@v2
+      - uses: actions/cache@v3
         if: |
           !startsWith(matrix.os, 'macos')
         with:
@@ -212,19 +214,19 @@ jobs:
           sudo dpkg --add-architecture i386
           sudo apt-get update
           sudo apt-get install -y gcc-multilib libssl-dev:i386 pkg-config-x86-64-linux-gnux32
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - uses: actions-rs/toolchain@v1
         with:
           toolchain: stable
           target: ${{ matrix.target }}
           override: true
-      - uses: actions/cache@v2
+      - uses: actions/cache@v3
         with:
           path: |
             ~/.cargo/registry
             ~/.cargo/git
           key: ${{ runner.os }}-cargo-rust_stable-${{ hashFiles('**/Cargo.lock') }}
-      - uses: actions/cache@v2
+      - uses: actions/cache@v3
         if: |
           !startsWith(matrix.os, 'macos')
         with:
@@ -252,7 +254,7 @@ jobs:
           dest: jsonst_${{ matrix.name }}.zip
           recursive: true
       - name: Upload archive
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: binary
           path: jsonst_${{ matrix.name }}.zip
@@ -264,7 +266,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Download archive
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: binary
       - name: Create release
@@ -282,7 +284,7 @@ jobs:
       - publish-release
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Setup Rust
         uses: actions-rs/toolchain@v1
         with:
