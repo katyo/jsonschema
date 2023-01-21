@@ -42,7 +42,7 @@ impl Command {
         let data = utils::read_input(topic, path, input)?;
         let format = self
             .format
-            .or_else(|| Format::from_path(&path))
+            .or_else(|| Format::from_path(path))
             .ok_or_else(|| {
                 log::error!(
                     "Format of {} from '{}' is not given and cannot to be inferred from filename. Try use -f option to set it.",
@@ -64,13 +64,13 @@ impl Command {
         if let Some(path) = &self.output {
             log::info!("Saving {} to file '{}'...", topic, path.display());
 
-            args.check_output_file(&path)?;
-            let mut file = utils::create_file(topic, &path)?;
-            utils::write_output(topic, &path, &mut file, &contents)?;
+            args.check_output_file(path)?;
+            let mut file = utils::create_file(topic, path)?;
+            utils::write_output(topic, path, &mut file, &contents)?;
         } else {
             let path = Path::new("stdout");
             let mut file = std::io::stdout();
-            utils::write_output(topic, &path, &mut file, &contents)?;
+            utils::write_output(topic, path, &mut file, &contents)?;
         }
 
         Ok(0)

@@ -17,7 +17,7 @@ pub type Raw = Vec<u8>;
 impl Cache {
     pub(super) fn _open(path: &Path) -> Option<Db> {
         if !path.is_dir() {
-            std::fs::create_dir_all(&path)
+            std::fs::create_dir_all(path)
                 .map_err(|error| {
                     log::error!(
                         "Unable to create directory '{}' due to: {}",
@@ -105,5 +105,5 @@ fn _key_path(db: &Db, key: &[u8]) -> PathBuf {
     use base64::Engine;
 
     let key = base64::engine::general_purpose::URL_SAFE_NO_PAD.encode(key);
-    db.join(&key)
+    db.join(key)
 }

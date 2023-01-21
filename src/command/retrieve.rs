@@ -19,7 +19,7 @@ impl Command {
     pub fn run(&self, args: &Args, state: &State) -> CmdResult {
         let contents = state
             .schema_store
-            .get_one(&[&self.pattern], true, false)
+            .get_one([&self.pattern], true, false)
             .ok_or(Error::Query)?
             .1;
 
@@ -29,13 +29,13 @@ impl Command {
         if let Some(path) = &self.output {
             log::info!("Saving {} to file '{}'...", topic, path.display());
 
-            args.check_output_file(&path)?;
-            let mut file = utils::create_file(topic, &path)?;
-            utils::write_output(topic, &path, &mut file, &contents)?;
+            args.check_output_file(path)?;
+            let mut file = utils::create_file(topic, path)?;
+            utils::write_output(topic, path, &mut file, &contents)?;
         } else {
             let path = Path::new("stdout");
             let mut file = std::io::stdout();
-            utils::write_output(topic, &path, &mut file, &contents)?;
+            utils::write_output(topic, path, &mut file, &contents)?;
         }
 
         Ok(0)

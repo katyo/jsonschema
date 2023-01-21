@@ -57,7 +57,7 @@ pub fn write_output(
     data: impl AsRef<[u8]>,
 ) -> Result<()> {
     let data = data.as_ref();
-    if let Err(error) = output.write_all(&data) {
+    if let Err(error) = output.write_all(data) {
         log::error!(
             "Unable to write {} to '{}' due to: {}",
             topic,

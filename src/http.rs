@@ -66,7 +66,7 @@ where
         }
     }
 
-    let doc = get(&url)?;
+    let doc = get(url)?;
 
     cache.put(&url, &doc);
 

@@ -20,7 +20,7 @@ impl<'c> CompiledSchema<'c> {
             opts.with_draft(conv_std(std));
         }
 
-        opts.compile(&schema)
+        opts.compile(schema)
             .map_err(|error| {
                 log::error!("Unable to compile JSON Schema due to: {}", error);
                 Error::Compile
@@ -30,11 +30,7 @@ impl<'c> CompiledSchema<'c> {
 
     pub fn validate(&self, path: &Path, data: &json::Value, quiet: bool) -> Result<u32> {
         Ok(if quiet {
-            if self.schema.is_valid(data) {
-                0
-            } else {
-                1
-            }
+            u32::from(!self.schema.is_valid(data))
         } else if let Err(errors) = self.schema.validate(data) {
             println!("Data is not valid");
             #[allow(clippy::suspicious_map)]

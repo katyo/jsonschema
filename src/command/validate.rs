@@ -57,7 +57,7 @@ impl Command {
                 let pattern = self.schema.display().to_string();
                 _state
                     .schema_store
-                    .get_one(&[&pattern], true, false)
+                    .get_one([&pattern], true, false)
                     .ok_or_else(|| {
                         log::error!(
                             "JSON Schema '{}' not found nor in filesystem nor on schemastore.org",
@@ -96,7 +96,7 @@ impl Command {
         } else {
             let path = Path::new("stdin");
             let mut file = std::io::stdin();
-            self.read_parse_check(args, topic, &schema, &path, &mut file)
+            self.read_parse_check(args, topic, &schema, path, &mut file)
         }
     }
 
@@ -111,7 +111,7 @@ impl Command {
         let data = utils::read_input(topic, path, input)?;
         let format = self
             .format
-            .or_else(|| Format::from_path(&path))
+            .or_else(|| Format::from_path(path))
             .ok_or_else(|| {
                 log::error!(
                     "Format of {} from '{}' is not given and cannot to be inferred from filename. Try use -f option to set it.",

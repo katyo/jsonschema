@@ -27,7 +27,7 @@ impl SchemaStore {
     /// Get list of schemas
     pub fn list(&self) -> Option<SchemaList> {
         let url = self.catalog_url.to_string();
-        get_cached(&self.cache, &url)
+        get_cached(&self.cache, url)
     }
 
     /// Search schemas using regex-like patterns
@@ -94,7 +94,7 @@ impl SchemaStore {
     /// Get schema by url
     pub fn get_by_url(&self, url: impl AsRef<Uri>) -> Option<json::Value> {
         let url = url.as_ref().to_string();
-        get_cached(&self.cache, &url)
+        get_cached(&self.cache, url)
     }
 
     /// Search schemas using regex-like patterns

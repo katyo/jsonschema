@@ -13,7 +13,7 @@ pub struct CompiledSchema<'c> {
 
 impl<'c> CompiledSchema<'c> {
     pub fn compile(schema: &'c json::Value, std: Option<Standard>) -> Result<Self> {
-        Config::from_schema(&schema, std.map(conv_std))
+        Config::from_schema(schema, std.map(conv_std))
             .map_err(|error| {
                 log::error!("Unable to compile JSON Schema due to: {}", error);
                 Error::Compile
